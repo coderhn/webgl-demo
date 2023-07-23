@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- <!DOCTYPE svg PUBLIC -->
+<!DOCTYPE svg>
+<html lang="en">
+<svg width="140" height="170" xmlns="http://www.w3.org/200/svg">
+    <title>svg 小程序</title>
+    <desc>svg 小程序-圆形</desc>
+    <!-- 在这里绘制图形 -->
+    <circle id="circle" cx="70" cy="85" r="50" style="stroke: black;fill:none" />
+    <!-- <rect x="0" y="0" width="140" height="170" style="stroke: black;fill:none"></rect> -->
+    <circle cx="60" cy="55" r="5" style="stroke: red; fill:green" />
+    <circle cx="80" cy="55" r="5" style="stroke: red; fill:green" />
+    <g id="whiskers">
+        <line x1="75" y1="75" x2="135" y2="55" style="stroke: black;"></line>
+        <line x1="75" y1="75" x2="135" y2="85" style="stroke: black;"></line>
+    </g>
+    <polyline points="45,105 50,115 90,115 95,105" fill="none" stroke="black" transform="translate(0 -10)"></polyline>
+    <!-- 这里的scale(-1 1)的意思是x坐标乘以-1（做对称）y坐标不变 将元素在水平方向上进行了反转，即水平方向上的内容被镜像翻转 -->
+    <use xlink:href="#whiskers" transform="scale(-1 1) translate(-140 0)"></use>
+    <polyline id="polyline" points="100,45 90,0 70,35" fill="none" stroke="black"></polyline>
+    <use xlink:href="#polyline" transform="scale(-1 1) translate(-140 0)"></use>
+    <text x="70" y="150" text-anchor="middle" alignment-baseline="middle">猫咪</text>
+</svg>
+
+</html>
