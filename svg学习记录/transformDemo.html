@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+        <g id="rect">
+            <rect x="0" y="0" width="50" height="50" fill="red" />
+        </g>
+      
+        <use id="translatedRect" xlink:href="#rect" transform="translate(50,50)" />
+        <use xlink:href="#translatedRect" transform="rotate(45,75,75)" />
+    </svg>
+</body>
+
+</html>

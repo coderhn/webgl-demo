@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <svg id="map" width="800" height="600"></svg>
+
+    <script>
+        const width = 800;
+        const height = 600;
+
+        const svg = document.getElementById("map");
+        svg.setAttribute("width", width);
+        svg.setAttribute("height", height);
+
+        // Function to scale coordinates to fit the SVG
+        function scaleCoordinates(coordinates) {
+            const bbox = [
+                [
+                    115.423411,
+                    41.060816
+                ],
+                [
+                    117.514624,
+                    39.442758
+                ]
+            ];
+            const xScale = (x) => (x - bbox[0][0]) / (bbox[1][0] - bbox[0][0]) * width;
+            const yScale = (y) => (1 - (y - bbox[0][1]) / (bbox[1][1] - bbox[0][1])) * height;
+
+            return coordinates.map(coord => [xScale(coord[0]), yScale(coord[1])]);
+        }
+
+        function drawMap(data) {
+            const features = data.features;
+
+            for (const feature of features) {
+                const coordinates = feature.geometry.coordinates[0][0];
+                const centroid = feature.properties.centroid;
+                const name = feature.properties.name;
+                const scaledCoordinates = scaleCoordinates(coordinates);
+                const scaledCentroid = scaleCoordinates([centroid])[0];
+
+                const polygon = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+                polygon.setAttribute("points", scaledCoordinates.map(coord => coord.join(",")).join(" "));
+                polygon.setAttribute("fill", "lightblue");
+                polygon.setAttribute("stroke", "black");
+                polygon.setAttribute("cursor", "pointer");
+                polygon.addEventListener('mousemove', () => {
+                    polygon.setAttribute('fill', 'blue')
+                })
+                polygon.addEventListener('mouseleave', () => {
+                    polygon.setAttribute('fill', 'lightblue')
+                })
+                svg.appendChild(polygon);
+                
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", scaledCentroid[0]);
+                text.setAttribute('y', scaledCentroid[1]);
+                text.setAttribute("fill", "red");
+                text.setAttribute("font-size", "14px");
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("dominant-baseline", "middle");
+                text.textContent = name;
+                svg.appendChild(text);
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", scaledCentroid[0]);
+                circle.setAttribute('cy', scaledCentroid[1]);
+                circle.setAttribute('r', 2);
+                circle.setAttribute("fill", "#fff");
+                circle.setAttribute("font-size", "14px");
+                circle.setAttribute("text-anchor", "middle");
+                circle.setAttribute("dominant-baseline", "middle");
+                circle.textContent = name;
+                svg.appendChild(circle);
+            }
+        }
+
+        fetch('../test.json')
+            .then(response => response.json())
+            .then(data => data.features.forEach((d) => drawMap({ features: [d] })))
+            .catch(error => console.error("Error loading data:", error));
+    </script>
+</body>
+
+</html>
