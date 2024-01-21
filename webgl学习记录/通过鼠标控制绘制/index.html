@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../lib/index.js"></script>
+    <style>
+      #canvas {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="400" height="400">此浏览器不支持canvas</canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const gl = canvas.getContext("webgl");
+      // 顶点着色器源代码
+      const VERTEX_SHADER_SOURCE = `
+            attribute vec4 aPosition; // vec4声明的变量默认是(0.0,0.0,0.0,1.0)
+            void main(){
+                gl_Position = aPosition; // x坐标,y坐标,z坐标,w齐次坐标 =>(x/w,y/w,z/w)
+                gl_PointSize = 10.0;
+            }
+        `;
+
+      // 片元着色器源代码
+      const FRAGMENT_SHADER_SOURCE = `
+            void main(){
+                gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+            }
+        `;
+
+      const program = initShader(gl, VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+      const aPosition = gl.getAttribLocation(program, "aPosition");
+      const points = [];
+      canvas.onmousemove = function (event) {
+        const domX = event.offsetX;
+        const domY = event.offsetY;
+        const domPosition = event.target.getBoundingClientRect();
+        const { width, height } = domPosition;
+        const halfWidth = width / 2;
+        const halfHeight = height / 2;
+        const x = (domX - halfWidth) / halfWidth;
+        const y = (halfHeight - domY) / halfHeight;
+        points.push({ x, y });
+        points.forEach((d) => {
+          gl.vertexAttrib2f(aPosition, d.x, d.y);
+          gl.drawArrays(gl.POINTS, 0, 1);
+        });
+      };
+      //   canvas.onmousemove = function (event) {
+      //     const domX = event.offsetX;
+      //     const domY = event.offsetY;
+      //     const domPosition = event.target.getBoundingClientRect();
+      //     const { width, height } = domPosition;
+      //     console.log("domPosition", domPosition, event.offsetX);
+      //     const x = (domX - width / 2) / (width / 2);
+      //     const y = (height / 2 - domY) / (height / 2);
+      //     console.log(" x ", x, y);
+      //     points.push({ x, y });
+      //     points.forEach((d) => {
+      //       gl.vertexAttrib2f(aPosition, d.x,d.y);
+      //       gl.drawArrays(gl.POINTS, 0, 1);
+      //     });
+      //   };
+      // gl.vertexAttrib1f(aPosition,x);
+      // gl.drawArrays(gl.POINTS,0,1);
+      // let x = 0;
+      // setInterval(()=>{
+      //     x+=0.1
+      //     if(x>1.0){
+      //         x=0.0
+      //     }
+      // gl.vertexAttrib1f(aPosition,x);
+      // gl.drawArrays(gl.POINTS,0,1);
+      // },200)
+    </script>
+  </body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../lib/index.js"></script>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400">此浏览器不支持canvas</canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const gl = canvas.getContext('webgl');
+        // 顶点着色器源代码
+        const VERTEX_SHADER_SOURCE = `
+            attribute vec4 aPosition; // vec4声明的变量默认是(0.0,0.0,0.0,1.0)
+            void main(){
+                gl_Position = aPosition; // x坐标,y坐标,z坐标,w齐次坐标 =>(x/w,y/w,z/w)
+                gl_PointSize = 30.0;
+            }
+        `;
+
+        // 片元着色器源代码
+        const FRAGMENT_SHADER_SOURCE = `
+            void main(){
+                gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+            }
+        `
+        
+        const pointsArr = [
+            // [x,y,z,w]
+            [-1.0,1.0,0.0,1.0],
+            [0.0,1.0,0.0,1.0],
+            [1.0,1.0,0.0,1.0],
+
+            [1.0,0.0,0.0,1.0],
+            [1.0,-1.0,0.0,1.0],
+
+            [0.0,-1.0,0.0,1.0],
+            [-1.0,-1.0,0.0,1.0],
+
+            [-1.0,0.0,0.0,1.0],
+
+            [0.0,0.0,0.0,1.0]
+
+    ];
+
+        const program = initShader(gl,VERTEX_SHADER_SOURCE,FRAGMENT_SHADER_SOURCE);
+        const aPosition = gl.getAttribLocation(program,'aPosition');
+        pointsArr.forEach((d)=>{
+            gl.vertexAttrib4f(aPosition,...new Float32Array(d));
+            gl.drawArrays(gl.POINTS,0,1);
+        })
+        // let x = 0;
+        // setInterval(()=>{
+        //     x+=0.1
+        //     if(x>1.0){
+        //         x=0.0
+        //     }
+        //     gl.vertexAttrib1f(aPosition,x);
+        //     gl.drawArrays(gl.POINTS,0,1);
+        // },200)
+    </script>
+</body>
+</html>

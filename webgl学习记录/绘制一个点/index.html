@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- <script src="../lib/index.js" type="module"></script> -->
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400">此浏览器不支持canvas</canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const gl = canvas.getContext('webgl');
+        // 顶点着色器源代码
+        const VERTEX_SHADER_SOURCE = `
+            void main(){
+                gl_Position = vec4(0.0,0.0,0.0,1.0); // x坐标,y坐标,z坐标,w齐次坐标 =>(x/w,y/w,z/w)
+                gl_PointSize = 30.0;
+            }
+        `;
+
+        // 片元着色器源代码
+        const FRAGMENT_SHADER_SOURCE = `
+            void main(){
+                gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+            }
+        `
+
+        // 创建着色器对象
+        const VERTEX_SHADER = gl.createShader(gl.VERTEX_SHADER);
+        const FRAGMENT_SHADER = gl.createShader(gl.FRAGMENT_SHADER);
+        // 使用WebGLRenderingContext实例的shaderSource方法指定色器的源代码
+        gl.shaderSource(VERTEX_SHADER,VERTEX_SHADER_SOURCE);
+        gl.shaderSource(FRAGMENT_SHADER,FRAGMENT_SHADER_SOURCE);
+        // 编译着色器源代码
+        gl.compileShader(VERTEX_SHADER);
+        gl.compileShader(FRAGMENT_SHADER);
+
+        // 创建程序对象
+        const program = gl.createProgram();
+        gl.attachShader(program,VERTEX_SHADER);
+        gl.attachShader(program,FRAGMENT_SHADER);
+
+        // const program = initShader(gl,VERTEX_SHADER_SOURCE,FRAGMENT_SHADER_SOURCE)
+        gl.linkProgram(program);
+        gl.useProgram(program);
+        // 执行绘制
+        gl.drawArrays(gl.POINTS,0,1);
+
+
+    </script>
+</body>
+</html>
