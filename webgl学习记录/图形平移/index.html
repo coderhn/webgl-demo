@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../lib/index.js"></script>
+    <style>
+      #canvas {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="400" height="400">此浏览器不支持canvas</canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const gl = canvas.getContext("webgl");
+      // 顶点着色器源代码
+      const VERTEX_SHADER_SOURCE = `
+            attribute vec4 aPosition; // vec4声明的变量默认是(0.0,0.0,0.0,1.0)
+            attribute float aPointSize; 
+            attribute float aTranslate;
+            void main(){
+                gl_Position = vec4(aPosition.x+aTranslate,aPosition.y,aPosition.z,1.0); // x坐标,y坐标,z坐标,w齐次坐标 =>(x/w,y/w,z/w)
+                gl_PointSize = aPointSize;
+            }
+        `;
+
+      // 片元着色器源代码
+      const FRAGMENT_SHADER_SOURCE = `
+            precision mediump float; // 一定要指定片元着色器的精度否则会webGL绘图上下文在使用源代码时会报错
+            uniform vec4 aFragColor; // 无默认值
+            void main(){
+                gl_FragColor = aFragColor;
+            }
+        `;
+
+      const program = initShader(gl, VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+      const aPosition = gl.getAttribLocation(program, "aPosition");
+      const aPointSize = gl.getAttribLocation(program, "aPointSize");
+      const aTranslate = gl.getAttribLocation(program, "aTranslate");
+      const aFragColor = gl.getUniformLocation(program, "aFragColor");
+      gl.uniform4f(aFragColor, 1.0, 0.0, 0.0, 1.0);
+
+      const points = new Float32Array([
+        0.0,1.0,10.0, // 10.0
+        -1.0,0.0,20.0, // 20.0
+        1.0,0.0,30.0, // 30.0
+        0.0,-1.0,40.0 // 40.0
+      ]);
+
+      const BYTE = points.BYTES_PER_ELEMENT
+
+      const buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
+
+      gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, true, BYTE*3, 0); // 3个一组（BYTE*3）的使用，从第一个位置（0）开始使用，使用2个
+      gl.vertexAttribPointer(aPointSize, 1, gl.FLOAT, true, BYTE*3, BYTE*2);// 3个一组（BYTE*3）的使用，从第三个位置（BYTE*2）开始使用，使用2个
+      gl.enableVertexAttribArray(aPosition);
+      gl.enableVertexAttribArray(aPointSize);
+
+      let x = -1.0;
+      setInterval(()=>{
+        x+=0.01;
+        if(x>1.0){
+          x = -1.0;
+        }
+        gl.vertexAttrib1f(aTranslate,x);
+        gl.drawArrays(gl.TRIANGLES, 0, 4);
+      },60)
+     
+    </script>
+  </body>
+</html>

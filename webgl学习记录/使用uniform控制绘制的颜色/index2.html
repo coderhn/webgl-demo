@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="../lib/index.js"></script>
+    <style>
+      #canvas {
+        background-color: yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="400" height="400">此浏览器不支持canvas</canvas>
+    <script>
+      const canvas = document.getElementById("canvas");
+      const gl = canvas.getContext("webgl");
+      // 顶点着色器源代码
+      const VERTEX_SHADER_SOURCE = `
+              attribute vec4 aPosition; // vec4声明的变量默认是(0.0,0.0,0.0,1.0)
+              void main(){
+                  gl_Position = aPosition; // x坐标,y坐标,z坐标,w齐次坐标 =>(x/w,y/w,z/w)
+                  gl_PointSize = 10.0;
+              }
+          `;
+
+      // 片元着色器源代码
+      const FRAGMENT_SHADER_SOURCE = `
+              precision highp float; // 一定要指定片元着色器的精度否则会webGL绘图上下文在使用源代码时会报错
+              uniform vec4 aFragColor; // 无默认值
+              void main(){
+                  gl_FragColor = aFragColor;
+              }
+          `;
+
+      const program = initShader(gl, VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
+      const aPosition = gl.getAttribLocation(program, "aPosition");
+      const aFragColor = gl.getUniformLocation(program, "aFragColor");
+      const points = [];
+      for (let i = -1; i <= 1; i+=0.01) {
+        for (let j = -1; j <= 1; j+=0.01) {
+          for (let k = -1; k <= 1; k+=0.01) {
+            // const r = 2 * (j / 255) - 1;
+            // const g = 2 * (k / 255) - 1;
+            // const b = 2 * (k / 255) - 1;
+            points.push({ r:i, g:j, b:k });
+          }
+        }
+      }
+
+      points.forEach((d) => {
+        gl.vertexAttrib3f(aPosition, d.r, d.g, d.b);
+        gl.uniform4f(aFragColor, d.r, d.g, d.b, 1.0);
+        gl.drawArrays(gl.POINTS, 0, 1);
+      });
+
+      //   const flag = -1.0;
+      //   const points = [];
+      //   while(flag<=1.0){
+      //     flag+=0.1;
+      //     // points.push({x:flag,y:})
+      //   }
+
+      //   let isStart = false;
+      //   canvas.onmousemove = function (event) {
+      //     if (!isStart) {
+      //       return false;
+      //     }
+      //     const domX = event.offsetX;
+      //     const domY = event.offsetY;
+      //     const domPosition = event.target.getBoundingClientRect();
+      //     const { width, height } = domPosition;
+      //     const halfWidth = width / 2;
+      //     const halfHeight = height / 2;
+      //     const x = (domX - halfWidth) / halfWidth;
+      //     const y = (halfHeight - domY) / halfHeight;
+      //     points.push({ x, y });
+      //     points.forEach((d) => {
+      //       gl.vertexAttrib2f(aPosition, d.x, d.y);
+      // gl.uniform4f(aFragColor, d.x, d.y, 1.0 - d.y, 1.0);
+      // gl.drawArrays(gl.POINTS, 0, 1);
+      //     });
+      //   };
+
+      //   canvas.onmousedown = function (event) {
+      //     isStart = true;
+      //   };
+      //   canvas.onmouseup = function (event) {
+      //     isStart = false;
+      //   };
+      //   canvas.onmouseleave = function (event) {
+      //     isStart = false;
+      //   };
+    </script>
+  </body>
+</html>

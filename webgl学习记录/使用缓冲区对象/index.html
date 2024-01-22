@@ -37,37 +37,43 @@
       const program = initShader(gl, VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
       const aPosition = gl.getAttribLocation(program, "aPosition");
       const aFragColor = gl.getUniformLocation(program, "aFragColor");
-      const points = [];
-      let isStart = false;
-      canvas.onmousemove = function (event) {
-        if (!isStart) {
-          return false;
-        }
-        const domX = event.offsetX;
-        const domY = event.offsetY;
-        const domPosition = event.target.getBoundingClientRect();
-        const { width, height } = domPosition;
-        const halfWidth = width / 2;
-        const halfHeight = height / 2;
-        const x = (domX - halfWidth) / halfWidth;
-        const y = (halfHeight - domY) / halfHeight;
-        points.push({ x, y });
-        points.forEach((d) => {
-          gl.vertexAttrib2f(aPosition, d.x, d.y);
-          gl.uniform4f(aFragColor, d.x, d.y, 1.0 - d.y, 1.0);
-          gl.drawArrays(gl.POINTS, 0, 1);
-        });
-      };
+      gl.uniform4f(aFragColor, 1.0, 0.0, 0.0, 1.0);
 
-      canvas.onmousedown = function (event) {
-        isStart = true;
-      };
-      canvas.onmouseup = function (event) {
-        isStart = false;
-      };
-      canvas.onmouseleave = function (event) {
-        isStart = false;
-      };
+      const points = new Float32Array([
+        0.0,1.0,
+        -1.0,0.0,
+        1.0,0.0,
+        0.0,-1.0
+      ]);
+
+      const buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
+      gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, true, 0, 0);
+      gl.enableVertexAttribArray(aPosition);
+      gl.drawArrays(gl.POINTS, 0, 4);
+
+      //   const points = [];
+      //   let isStart = false;
+      //   canvas.onmousemove = function (event) {
+      //     if (!isStart) {
+      //       return false;
+      //     }
+      //     const domX = event.offsetX;
+      //     const domY = event.offsetY;
+      //     const domPosition = event.target.getBoundingClientRect();
+      //     const { width, height } = domPosition;
+      //     const halfWidth = width / 2;
+      //     const halfHeight = height / 2;
+      //     const x = (domX - halfWidth) / halfWidth;
+      //     const y = (halfHeight - domY) / halfHeight;
+      //     points.push({ x, y });
+      //     points.forEach((d) => {
+      //       gl.vertexAttrib2f(aPosition, d.x, d.y);
+      //       gl.uniform4f(aFragColor, d.x, d.y, 1.0 - d.y, 1.0);
+      //       gl.drawArrays(gl.POINTS, 0, 1);
+      //     });
+      //   };
     </script>
   </body>
 </html>

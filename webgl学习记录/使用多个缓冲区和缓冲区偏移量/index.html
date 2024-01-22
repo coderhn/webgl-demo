@@ -19,9 +19,11 @@
       // 顶点着色器源代码
       const VERTEX_SHADER_SOURCE = `
             attribute vec4 aPosition; // vec4声明的变量默认是(0.0,0.0,0.0,1.0)
+            attribute float aPointSize; 
+            attribute float aTranslate;
             void main(){
                 gl_Position = aPosition; // x坐标,y坐标,z坐标,w齐次坐标 =>(x/w,y/w,z/w)
-                gl_PointSize = 10.0;
+                gl_PointSize = aPointSize;
             }
         `;
 
@@ -36,38 +38,30 @@
 
       const program = initShader(gl, VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
       const aPosition = gl.getAttribLocation(program, "aPosition");
+      const aPointSize = gl.getAttribLocation(program, "aPointSize");
+      console.log("aPointSize",aPointSize)
       const aFragColor = gl.getUniformLocation(program, "aFragColor");
-      const points = [];
-      let isStart = false;
-      canvas.onmousemove = function (event) {
-        if (!isStart) {
-          return false;
-        }
-        const domX = event.offsetX;
-        const domY = event.offsetY;
-        const domPosition = event.target.getBoundingClientRect();
-        const { width, height } = domPosition;
-        const halfWidth = width / 2;
-        const halfHeight = height / 2;
-        const x = (domX - halfWidth) / halfWidth;
-        const y = (halfHeight - domY) / halfHeight;
-        points.push({ x, y });
-        points.forEach((d) => {
-          gl.vertexAttrib2f(aPosition, d.x, d.y);
-          gl.uniform4f(aFragColor, d.x, d.y, 1.0 - d.y, 1.0);
-          gl.drawArrays(gl.POINTS, 0, 1);
-        });
-      };
+      gl.uniform4f(aFragColor, 1.0, 0.0, 0.0, 1.0);
 
-      canvas.onmousedown = function (event) {
-        isStart = true;
-      };
-      canvas.onmouseup = function (event) {
-        isStart = false;
-      };
-      canvas.onmouseleave = function (event) {
-        isStart = false;
-      };
+      const points = new Float32Array([
+        0.0,1.0,10.0, // 10.0
+        -1.0,0.0,20.0, // 20.0
+        1.0,0.0,30.0, // 30.0
+        0.0,-1.0,40.0 // 40.0
+      ]);
+
+      const BYTE = points.BYTES_PER_ELEMENT
+
+      const buffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+      gl.bufferData(gl.ARRAY_BUFFER, points, gl.STATIC_DRAW);
+
+      gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, true, BYTE*3, 0); // 3个一组（BYTE*3）的使用，从第一个位置（0）开始使用，使用2个
+      gl.vertexAttribPointer(aPointSize, 1, gl.FLOAT, true, BYTE*3, BYTE*2);// 3个一组（BYTE*3）的使用，从第三个位置（BYTE*2）开始使用，使用2个
+      gl.enableVertexAttribArray(aPosition);
+      gl.enableVertexAttribArray(aPointSize);
+      gl.drawArrays(gl.TRIANGLES, 0, 4);
+     
     </script>
   </body>
 </html>

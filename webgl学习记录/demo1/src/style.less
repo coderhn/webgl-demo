@@ -1,0 +1,33 @@
+.layout{
+    display: flex;
+    .canvas{
+        width: calc(100vw - 200px);
+        .header-tools{
+            height: 45px;
+            padding: 10px 40px;
+            background-color: green;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+            font-weight: 500;
+        }
+        .canvas-content{
+            width: calc(100vw - 200px);
+            #canvas{
+                width: inherit;
+                height: inherit;
+                // width: 100%;
+                background-color: rgb(255, 255, 240);
+            }
+        }
+    }
+    .tool{
+        // 
+        // max-width: 200px;
+        width: 200px;
+        height: 100vh;
+        background: #eee;
+    }
+}
